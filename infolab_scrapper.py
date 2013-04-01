@@ -4,10 +4,10 @@ import os
 path = os.getcwd()
 
 for dirname, dirnames, filenames in os.walk(path):
-	# print path to all filenames.
 	for filename in filenames:
 		cur = os.path.join(dirname, filename)
 		try:
+			#try to read each file as a gzip
 			with open('info_lab_links.txt', 'a') as myfile:
 				for line in gzip.open(cur, 'rb'):
 					myfile.write(line + '\n')
