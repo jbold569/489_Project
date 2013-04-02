@@ -17,13 +17,19 @@ while True:
 	r = requests.get(url%(previous_max_id))
 
 	if r.status_code == 200:
-		reply = r.json()
+		
+		reply = None
+		try:
+			reply = r.json()
+		except:
+			reply = r.json
 		previous_max_id = reply['max_id_str']
 		
 		file = open("out_tweets.txt", 'a')
 		for tweet in reply['results']:
 			file.write(json.dumps(tweet, separators=(',',':'))+'\n')
 		file.close()
+		print "Request number: %d Number of results: %d"%(sleep+1, len(reply['results']))
 	else:
 		print r.status_code
 		
