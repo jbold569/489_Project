@@ -1,0 +1,2 @@
+Number of transactions: 12474
+Number of unique users: 9063
