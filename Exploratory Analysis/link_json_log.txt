@@ -1,2 +1,3 @@
 Number of transactions: 12474
+Number of usable lines: 10953
 Number of unique users: 9063

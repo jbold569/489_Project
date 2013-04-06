@@ -4,7 +4,12 @@ import json
 
 class tweet_links:
 	num_lines = 0
+	num_usable = 0
 	user_links = defaultdict(list)
+	
+	def get_useable(self):
+		for item in self.user_links:
+			self.num_usable += len(self.user_links[item])
 
 	def execute(self, file_path):
 		file = open(file_path, 'r')
@@ -13,7 +18,9 @@ class tweet_links:
 			self.process(line)
 		file.close()
 		self.remove_none()
+		self.get_useable()
 		print "Number of transactions: ",  self.num_lines
+		print "Number of usable lines: ", self.num_usable
 		print "Number of unique users: ", len(self.user_links)
 		print "==================================="
 		print "Writing to link_json.txt"
@@ -22,9 +29,13 @@ class tweet_links:
 	
 	def write_results(self):
 		with open('link_json.txt', 'w') as outfile:
-			json.dump(self.user_links, outfile)
+			for item in self.user_links:
+				dict = {'user_id' : item, 'workouts' : self.user_links[item]}
+				json.dump(dict, outfile)
+				outfile.write('\n')
 		with open('link_json_log.txt', 'w') as outlog:
 			outlog.write("Number of transactions: " + str(self.num_lines) + '\n')
+			outlog.write("Number of usable lines: " + str(self.num_usable) + '\n')
 			outlog.write("Number of unique users: " + str(len(self.user_links)) + '\n')
 		print 'Done'
 		

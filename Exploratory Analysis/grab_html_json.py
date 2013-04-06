@@ -1,16 +1,19 @@
 import urllib
 import json
+from collections import defaultdict
 
-json_data = open("link_json.txt")
-data = json.load(json_data)
-
-def process(link):
+class HTML_json:
+	features_count = defaultdict(int)
+	
+def grab_HTML(link):
 	f = urllib.urlopen(link)
 	s = f.read()
 	f.close()
 	print s
 
-for item in data:
-	list = data[item]
-	for link in list:
-		process(link)
+json_data = open("link_json.txt")
+for line in json_data:
+	data = json.loads(line)
+	for link in data['workouts']:
+		grab_HTML(link)
+
