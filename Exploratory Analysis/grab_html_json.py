@@ -7,8 +7,7 @@ class HTML_json:
 	features_count = defaultdict(int)
 	
 def clean(js):
-	print 'starting clean'
-	print js.replace('\n', '').replace('\t', ' ')
+	print js.replace('\n', '').replace('\t', ' ').replace(';', '')
 	
 def grab_HTML(link):
 	f = urllib.urlopen(link)
@@ -21,19 +20,24 @@ def grab_HTML(link):
 		try:
 			mystring = j.text.encode('ascii')
 			if "window.np.settings = " in mystring:
-				print "found 1"
+				print "found 1 \n"
 				clean(mystring)
 			if "window.np.share_data = " in mystring:
-				print "found 2"
+				print "found 2 \n"
+				clean(mystring)
 			if "window.np.baked_data =" in mystring:
-				print "found 3"
+				print "found 3 \n"
 				found_crit = True
+				clean(mystring)
 			if "deviceType =" in mystring:
-				print "found 4"
+				print "found 4 \n"
+				clean(mystring)
 			if "window.np.settings.user_settings =" in mystring:
-				print "found 5"
+				print "found 5 \n"
+				clean(mystring)
 		 	if "window.np.friendCount =" in mystring:
-				print "found 6"
+				print "found 6 \n"
+				clean(mystring)
 			#print mystring + '\n\n'
 		except:
 			continue
