@@ -21,8 +21,6 @@ class HTML_json:
 			for link in data['workouts']:
 				dict['workouts'].append(self.grab_HTML(link))
 			return dict
-		else:
-			print "Already processed ", data['user_id']
 	
 	def clean(self,js):
 		return js.replace('\n', '').replace('\t', ' ').replace(';', '').replace('\'', '"')

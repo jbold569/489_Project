@@ -1,0 +1,2 @@
+duration is in MS
+distance is in KM
