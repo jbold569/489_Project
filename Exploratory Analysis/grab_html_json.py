@@ -52,9 +52,14 @@ class HTML_json:
 			s = f.read()
 			f.close()
 		except:
-			return
-		soup = BeautifulSoup(''.join(s))
-		js= soup.findAll('script')
+			return {}
+		soup = None
+		js = None
+		try:
+			soup = BeautifulSoup(''.join(s))
+			js= soup.findAll('script')
+		except:
+			return {}
 		for j in js:
 			try:
 				mystring = j.text.encode('utf-8')
