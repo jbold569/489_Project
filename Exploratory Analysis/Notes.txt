@@ -1,2 +1,8 @@
 duration is in MS
 distance is in KM
+if duration is zero, look at length of speed and mult by 10. this is seconds
+
+
+average speeds: 45%  14k when we get all our data
+2743 - old
+4109 - new
