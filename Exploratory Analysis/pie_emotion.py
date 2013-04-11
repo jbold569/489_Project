@@ -55,8 +55,8 @@ for line in file:
 			incStat(emotions, tags, 'emotion')
 			incStat(weather, tags, 'weather')
 			incStat(terrain, tags, 'terrain')
-			if appendStat(temperatures, tags, 'temperature'):
-				appendStat(distances, activity, 'distance')
+			appendStat(temperatures, tags, 'temperature')
+			appendStat(distances, activity, 'distance')
 			
 file.close()
 #emotions = {u'amped': 241, u'injured': 135, u'great': 2367, u'so_so': 1617, u'tired': 547, 'NA': 3857, u'unstoppable': 2187}
@@ -92,7 +92,7 @@ fracs = [float(elem)/total*100 for elem in terrain.values()]
 pie(fracs, labels = labels,autopct='%1.1f%%', shadow=True, colors=("b","g","r","y","c", "#eeefff", "#ee0fff", "#0eefff"))
 title("Terrain out of " +str(total)+ " Workouts")
 
-temperatures = [1.8*(float(t.replace('C', ''))+32) for t in temperatures]
+temperatures = [1.8*(float(t.replace('C', ''))+32) for t in temperatures if t != '0']
 distances = [d*0.621371192 for d in distances]
 buckets = range(20, 150, 5)
 
@@ -100,8 +100,4 @@ figure(5)
 hist(temperatures, bins=buckets)
 title("Temperature Ranges out of " +str(total)+ " Workouts")
 
-figure(6)
-scatter(temperatures, distances)
-xlim((20,150))
-title("Temperature vs Distance out of " +str(total)+ " Workouts")
 show()

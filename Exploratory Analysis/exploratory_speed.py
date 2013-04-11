@@ -80,6 +80,7 @@ for user in IN_FILE:
 		continue
 speed = []
 distances = []
+corr = []
 fuels = []
 fuel_buckets = [50*x for x in range(0,30)]
 buckets = [.5*x for x in range(0,26)]
@@ -93,6 +94,20 @@ for item in users:
 	faverage = get_average_fuel(item['dur_dist_list'])
 	fuels.append(faverage)
 new_speed = [(item/60)**-1 for item in speed]
+
+from math import floor
+
+for sp, dist in zip(new_speed, distances):
+	try:
+		s = buckets[int(floor(sp*0.5))]
+		d = buckets[int(floor(dist*.5))]
+		corr.append(('['+str(s)+','+str(s+0.5)+')', '['+str(d)+','+str(d+0.5)+')'))
+	except:
+		pass
+file = open('corr.csv', 'w')
+for c in corr:
+	file.write(str(c)[1:-1]+'\n')
+file.close()
 
 #hist, bin_edges = np.histogram(speed, bins = buckets)
 hist, bin_edges = np.histogram(new_speed, bins = buckets)
