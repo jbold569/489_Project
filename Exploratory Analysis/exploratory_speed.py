@@ -66,7 +66,7 @@ for user in IN_FILE:
 				duration = get_duration(workout)
 				distance = get_distance(workout)
 				start_time = get_start_time(workout)
-				print start_time
+				#print start_time
 				fuel = get_fuel(workout)
 				if duration != 0 and distance != 0:
 					#the 60k is to go from ms to minutes
@@ -96,6 +96,7 @@ new_speed = [(item/60)**-1 for item in speed]
 
 #hist, bin_edges = np.histogram(speed, bins = buckets)
 hist, bin_edges = np.histogram(new_speed, bins = buckets)
+print bin_edges
 print hist
 
 plt.figure()		
