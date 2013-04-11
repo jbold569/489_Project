@@ -104,9 +104,9 @@ from math import floor
 
 for sp, dist in zip(new_speed, distances):
 	try:
-		s = buckets[int(floor(sp*0.5))]
-		d = buckets[int(floor(dist*.5))]
-		corr.append(('['+str(s)+','+str(s+0.5)+')', '['+str(d)+','+str(d+0.5)+')'))
+		s = buckets[int(floor(sp/0.5))]
+		d = buckets[int(floor(dist/0.5))]
+		corr.append(('['+str(s)+' '+str(s+0.5)+')', '['+str(d)+' '+str(d+0.5)+')'))
 	except:
 		pass
 file = open('corr.csv', 'w')
