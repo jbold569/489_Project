@@ -2,6 +2,8 @@ import json
 import numpy as np
 import matplotlib.pyplot as plt
 users = []
+num_workouts = 0
+num_usable = 0
 
 def get_start_time(workout):
 	try:
@@ -61,12 +63,15 @@ for user in IN_FILE:
 	try:
 		loc_user = []
 		data = json.loads(user)
+		num_workouts += len(data['workouts'])
 		for workout in data['workouts']:
+			if workout:
+				num_usable+=1
 			try:
 				duration = get_duration(workout)
 				distance = get_distance(workout)
 				start_time = get_start_time(workout)
-				print start_time
+				#print start_time
 				fuel = get_fuel(workout)
 				if duration != 0 and distance != 0:
 					#the 60k is to go from ms to minutes
@@ -110,10 +115,13 @@ plt.figure()
 plt.hist(distances, bins = buckets)
 plt.title("Average Dist in Miles for Individuals")
 
+print "Num workouts", num_workouts
+print "Num usable", num_usable
 
 plt.figure()
 plt.hist(fuels, bins = fuel_buckets)
 plt.title("Average Fuel for Individuals")
 plt.show()
+
 	
 		
