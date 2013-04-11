@@ -17,5 +17,5 @@ print 'fuel :', dict['workouts'][0]['activity']['fuel'], '\n'
 print 'distance :', dict['workouts'][0]['activity']['distance'], '\n'
 
 
-print "================tags===================="
-print dict['workouts'][0]['activity']['tags'], '\n'
+print "================gps===================="
+print dict['workouts'][0]['activity']['gps'], '\n'
