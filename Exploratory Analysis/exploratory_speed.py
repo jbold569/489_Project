@@ -101,6 +101,7 @@ new_speed = [(item/60)**-1 for item in speed]
 
 #hist, bin_edges = np.histogram(speed, bins = buckets)
 hist, bin_edges = np.histogram(new_speed, bins = buckets)
+print bin_edges
 print hist
 
 plt.figure()		
