@@ -26,29 +26,11 @@ class PointBrowser:
 
 
         self.fig.canvas.mpl_connect('pick_event', self.onpick)
-        self.fig.canvas.mpl_connect('key_press_event', self.onpress)
-
-
-
-    def onpress(self, event):
-        'define some key press events'
-        if self.lastind is None: return
-
-        if event.key in ('q','Q'): sys.exit()
-
-        if event.key not in ('n', 'p'): return
-        if event.key=='n': inc = 1
-        else:  inc = -1
-
-
-        self.lastind += inc
-        self.lastind = clip(self.lastind, 0, len(self.xs)-1)
-        self.update()
 
     def onpick(self, event):
 
         if event.artist!=self.line: return True
-
+        print event.ind
         N = len(event.ind)
         if not N: return True
 
