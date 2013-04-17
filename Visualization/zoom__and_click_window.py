@@ -42,6 +42,8 @@ class AnnoteFinder:
 		  ytol = ((max(ydata) - min(ydata))/float(len(ydata)))/2
 		self.xtol = xtol
 		self.ytol = ytol
+		print self.xtol
+		print self.ytol
 		if axis is None:
 		  self.axis = pylab.gca()
 		else:
@@ -61,39 +63,17 @@ class AnnoteFinder:
 		  if self.axis is None or self.axis==event.inaxes:
 			for x,y in self.data:
 			  if  clickX-self.xtol < x < clickX+self.xtol and  clickY-self.ytol < y < clickY+self.ytol :
-				print "TRUE"
-
-
-	
-	  
+				print "TRUE", x, y
 
 figsrc = figure()
-figzoom = figure()
+axsrc = figsrc.add_subplot(211, xlim=(0,1), ylim=(0,1), autoscale_on=False)									
+axsrc.set_title('Right Click to Zoom')
+x,y,c = numpy.random.rand(3,20000)
 
-axsrc = figsrc.add_subplot(111, xlim=(0,1), ylim=(0,1), autoscale_on=False)
-axzoom = figzoom.add_subplot(111, xlim=(0.45,0.55), ylim=(0.4,.6),
-                                                    autoscale_on=False, picker=5)
-axsrc.set_title('Click to zoom')
-axzoom.set_title('zoom window')
-x,y,s,c = numpy.random.rand(4,200)
-s *= 200
+axsrc.scatter(x,y,c=c)
 
+af = AnnoteFinder(x,y, None, .0003,.0003)
 
-axsrc.scatter(x,y,s,c)
-axzoom.scatter(x,y,s,c)
-af = AnnoteFinder(x,y)
-
-
-
-def onpress(event):
-    if event.button!=1: return
-    x,y = event.xdata, event.ydata
-    axzoom.set_xlim(x-0.1, x+0.1)
-    axzoom.set_ylim(y-0.1, y+0.1)
-    figzoom.canvas.draw()
-
-	
-figsrc.canvas.mpl_connect('button_press_event', onpress)
-figzoom.canvas.mpl_connect('button_press_event', af)
+figsrc.canvas.mpl_connect('button_press_event', af)
 show()
 
