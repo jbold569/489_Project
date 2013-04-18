@@ -114,10 +114,15 @@ for c in corr:
 	file.write(str(c)[1:-1]+'\n')
 file.close()
 
+print "buckets", buckets
+
 #hist, bin_edges = np.histogram(speed, bins = buckets)
 hist, bin_edges = np.histogram(new_speed, bins = buckets)
-print bin_edges
-print hist
+f_speed = open("speed.txt", 'w')
+for item in new_speed:
+	f_speed.write(str(item) + '\n')
+f_speed.close()
+	
 
 plt.figure()		
 #plt.hist(speed, bins=buckets)
@@ -125,14 +130,17 @@ plt.hist(new_speed, bins=buckets)
 plt.title("Average Min/Mile for Individuals")
 	
 hist, bin_edges = np.histogram(distances, bins = buckets)
-print hist
+f_dist = open("dist.txt", 'w')
+for item in distances:
+	f_dist.write(str(item) + '\n')
+f_dist.close()
 
 plt.figure()
 plt.hist(distances, bins = buckets)
 plt.title("Average Dist in Miles for Individuals")
 
-print "Num workouts", num_workouts
-print "Num usable", num_usable
+#print "Num workouts", num_workouts
+#print "Num usable", num_usable
 
 plt.figure()
 plt.hist(fuels, bins = fuel_buckets)
