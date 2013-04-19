@@ -73,6 +73,11 @@ class AnnoteFinder:
 
 random_state = np.random.RandomState(0)
 
+master_lx_lim = None
+master_ly_lim = None
+
+master_ux_lim = None
+master_uy_lim = None
 n_clusters = 6				
 	
 figsrc = figure()
@@ -104,6 +109,10 @@ for k in range(n_clusters):
     title("Example cluster allocation with a single random init\n"
              "with MiniBatchKMeans")
 #x,y,c = numpy.random.rand(3,2000)
+master_lx_lim = axsrc.get_xlim()[0]
+master_ly_lim = axsrc.get_ylim()[0]
+master_ux_lim = axsrc.get_xlim()[1]
+master_uy_lim = axsrc.get_ylim()[1]
 
 v_line = axvline(x = .5, linewidth = 4, color='r')
 h_line = axhline(y=.5, linewidth = 4, color = 'b')
@@ -117,6 +126,7 @@ speed_slider = axes([0.05, 0.1, 0.2, 0.03])
 dist_slider = axes([0.05,0.14,0.2,0.03])
 pace_ax = axes([.92,.31,.05,.05])
 distance_ax = axes([.92,.24,.05,.05])
+reset_ax = axes([.92,.75,.05,.05])
 #emotion_ax = axes([0.05, 0.3, 0.1, 0.15])
 #weather_ax = axes([.16,.3,.1,.15])
 #terrain_ax = axes([.27, .3, .1, .15])
@@ -124,6 +134,7 @@ s_speed = Slider(speed_slider, "Pace", 0, 20, valinit = 9)
 s_distance = Slider(dist_slider, "Distance", 0, 30, valinit = 5)
 b_pace = Button(pace_ax, "Pace")
 b_dist = Button(distance_ax, "Dist")
+b_reset = Button (reset_ax, "Reset")
 #emotion_radio = RadioButtons(emotion_ax, ('tired','so_so','great','injured','amped','unstopable'))
 #weather_radio = RadioButtons(weather_ax, ('sunny','cloudy','partly_sunny','amped','rainy','snowy'))
 #terrain_radio = RadioButtons(terrain_ax, ('trail','treadmill','beach','road','amped','track'))
@@ -163,6 +174,12 @@ def to_dist(event):
 	auxdist = figsrc.add_subplot(224)
 	auxdist.hist(dist, bins = buckets)
 	draw()
+	
+def reset_zoom(event):
+	axsrc.set_xlim(master_lx_lim, master_ux_lim)
+	axsrc.set_ylim(master_ly_lim, master_uy_lim)
+	draw()
+	
 			
 #def handle_emotion(label):
 #	print label
@@ -177,6 +194,7 @@ s_speed.on_changed(update_speed)
 s_distance.on_changed(update_distance)
 b_pace.on_clicked(to_pace)
 b_dist.on_clicked(to_dist)
+b_reset.on_clicked(reset_zoom)
 #emotion_radio.on_clicked(handle_emotion)
 #weather_radio.on_clicked(handle_weather)
 #terrain_radio.on_clicked(handle_terrain)
