@@ -5,9 +5,13 @@ from matplotlib.pyplot import figure, show
 from matplotlib.widgets import Slider, Button, RadioButtons
 import numpy
 import matplotlib.lines as lines
-import math
 import matplotlib.gridspec as gridspec
 from pylab import *
+from sklearn.utils import shuffle
+from sklearn.utils import check_random_state
+from sklearn.cluster import MiniBatchKMeans
+from sklearn.cluster import KMeans
+import matplotlib.cm as cm
 
 def get_speed(file):
 	speed = []
@@ -20,7 +24,9 @@ def get_dist(file):
 	for line in file:
 		dist.append(float(line))
 	return dist
-
+	
+def make_data(file):
+    return np.genfromtxt(file, delimiter = ',')
 
 class AnnoteFinder:
 	"""
@@ -34,21 +40,20 @@ class AnnoteFinder:
 	connect('button_press_event', af)
 	"""
 
-	def __init__(self, xdata, ydata, axis=None, xtol=None, ytol=None):
-		self.data = zip(xdata, ydata)
+	def __init__(self, xdata, ydata, colordata, axis=None, xtol=None, ytol=None):
+		self.data = zip(xdata, ydata, colordata)
 		if xtol is None:
 		  xtol = ((max(xdata) - min(xdata))/float(len(xdata)))/2
 		if ytol is None:
 		  ytol = ((max(ydata) - min(ydata))/float(len(ydata)))/2
 		self.xtol = xtol
 		self.ytol = ytol
-		print self.xtol
-		print self.ytol
+		print xtol
+		print ytol
 		if axis is None:
 		  self.axis = pylab.gca()
 		else:
 		  self.axis= axis
-
 
 	def distance(self, x1, x2, y1, y2):
 		"""
@@ -61,29 +66,49 @@ class AnnoteFinder:
 		  clickX = event.xdata
 		  clickY = event.ydata
 		  if self.axis is None or self.axis==event.inaxes:
-			for x,y in self.data:
+			for x,y,c in self.data:
 			  if  clickX-self.xtol < x < clickX+self.xtol and  clickY-self.ytol < y < clickY+self.ytol :
-				print "TRUE", x, y
+				print "TRUE", x, y, c
 
-				
+
+random_state = np.random.RandomState(0)
+
+n_clusters = 6				
+	
 figsrc = figure()
 #left, bottom
 a = figtext(.4,.4, "TEST") 
 a.set_text("PASSED")
 #figsrc.subplots_adjust(bottom = .5, left = .05, right = .95, top = .95)
-axsrc = figsrc.add_subplot(211, xlim=(0,1), ylim=(0,1), autoscale_on=False)	
+axsrc = figsrc.add_subplot(211, autoscale_on=True)	
 
 #axsrc.set_visible(False)							
 axsrc.set_title('Right Click to Zoom')
-x,y,c = numpy.random.rand(3,20000)
+X = make_data("data.csv")
+x = []
+y = []
+c = []
+km = MiniBatchKMeans(k=n_clusters, init='random', n_init=10,
+                     random_state=random_state).fit(X)
+for k in range(n_clusters):
+    my_members = km.labels_ == k
+    color = cm.spectral(float(k) / n_clusters, 1)
+    x.extend(X[my_members, 0])
+    y.extend(X[my_members, 1])
+    for i in range(0,len(x)):
+		c.append(k)
+    plot(X[my_members, 0], X[my_members, 1], 'o', marker='.', c=color)
+    cluster_center = km.cluster_centers_[k]
+    plot(cluster_center[0], cluster_center[1], 'o',
+            markerfacecolor=color, markeredgecolor='k', markersize=6)
+    title("Example cluster allocation with a single random init\n"
+             "with MiniBatchKMeans")
+#x,y,c = numpy.random.rand(3,2000)
 
 v_line = axvline(x = .5, linewidth = 4, color='r')
 h_line = axhline(y=.5, linewidth = 4, color = 'b')
 
-
-axsrc.scatter(x,y,c=c)
-
-af = AnnoteFinder(x,y, None, .0008,.0008)
+af = AnnoteFinder(x,y,c, None, None, None)
 
 figsrc.canvas.mpl_connect('button_press_event', af)
 #left, bottom, width, height
@@ -138,8 +163,7 @@ def to_dist(event):
 	auxdist = figsrc.add_subplot(224)
 	auxdist.hist(dist, bins = buckets)
 	draw()
-		
-	
+			
 #def handle_emotion(label):
 #	print label
 
