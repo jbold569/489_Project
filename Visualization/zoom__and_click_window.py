@@ -30,16 +30,6 @@ def make_data(file):
     return np.genfromtxt(file, delimiter = ',')
 
 class AnnoteFinder:
-	"""
-	callback for matplotlib to display an annotation when points are clicked on.  The
-	point which is closest to the click and within xtol and ytol is identified.
-
-	Register this function like this:
-
-	scatter(xdata, ydata)
-	af = AnnoteFinder(xdata, ydata, annotes)
-	connect('button_press_event', af)
-	"""
 
 	def __init__(self, xdata, ydata, colordata, axis=None, xtol=None, ytol=None):
 		self.data = zip(xdata, ydata, colordata)
