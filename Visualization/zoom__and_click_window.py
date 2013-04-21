@@ -11,6 +11,7 @@ from sklearn.utils import shuffle
 from sklearn.utils import check_random_state
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.cluster import KMeans
+from sklearn import decomposition
 import matplotlib.cm as cm
 
 def get_speed(file):
@@ -89,12 +90,36 @@ axsrc = figsrc.add_subplot(211, autoscale_on=True)
 
 #axsrc.set_visible(False)							
 axsrc.set_title('Right Click to Zoom')
-X = make_data("data.csv")
+in_file = open("..\Exploratory Analysis\clean_data.txt", 'r')
+
+X = []
+import json
+for line in in_file:
+	data = json.loads(line)
+	sum = np.zeros(5)
+	invalid = False
+	for workout in data['workouts']:
+		try:
+			sum += np.array(workout['basic'])
+		except:
+			invalid = True
+	if invalid:
+		continue
+	vector = sum/float(len(data['workouts']))
+	X.append(vector)
+X = np.array(X)
 x = []
 y = []
 c = []
 km = MiniBatchKMeans(k=n_clusters, init='random', n_init=10,
                      random_state=random_state).fit(X)
+
+print X.shape
+pca = decomposition.PCA(n_components=2)
+pca.fit(X)
+X = pca.transform(X)
+print X.shape
+					 
 for k in range(n_clusters):
     my_members = km.labels_ == k
     color = cm.spectral(float(k) / n_clusters, 1)
