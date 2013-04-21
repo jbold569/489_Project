@@ -2,35 +2,7 @@ import json
 from collections import defaultdict
 import numpy as np
 from pylab import *
-
-def incStat(stat, data, key):
-	if sGet(data, key):
-		stat[sGet(data, key)] += 1
-	else:
-		stat['NA'] += 1
-
-def appendStat(stat, data, key):
-	if sGet(data, key):
-		stat.append(sGet(data, key))
-		return True
-	else:
-		return False
-
-def sLoad(line):
-	try:
-		return json.loads(line)
-	except ValueError as e:
-		#print e
-		return None
-		
-def sGet(data, key):
-	try:
-		return data[key]
-	except KeyError as e:
-		#print e
-		return None
-	except TypeError as e:
-		return None
+from utils import *
 		
 file = open("crappy_workout_json.txt")
 

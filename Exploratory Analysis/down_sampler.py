@@ -1,41 +1,35 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from utils import *
 
-def down_sample(data, size):
-	size = 100
-	extra = len(data)%size
-	down = []
-	num_samples = len(data)/size
-	
-	# This loop averages num_samples plus 1 for the number samples over 
-	# Example: 456 samples down sampled by do 100 will  have 56 samples over
-	# to fix this the first 56 down samples will be an average of 5 sample instead of 4
-	for i in range(extra):
-		offset = i*(num_samples+1)
-		average = sum(data[offset : offset+num_samples+1])/float(num_samples+1)
-		down.append(average)
-	
-	# Continues down sampling with the correct number of samples per down sample
-	for i in range(extra, size):
-		offset = (i-extra)*num_samples+extra*(num_samples+1)
-		average = sum(data[offset : offset+num_samples])/float(num_samples)
-		down.append(average)
-	
-	return down
+if __name__ == "__main__":
+	file = open("distance.txt")
+
+	speed_a = np.array([float(elem) for elem in file.readline()[1:-2].split(',')])
+	speed_b = np.array([float(elem) for elem in file.readline()[1:-2].split(',')])
+	speed_c = np.array([float(elem) for elem in file.readline()[1:-2].split(',')])
+
+	#speed_a = np.sin(.1*np.pi*np.arange(200))
+	#speed_b = np.sin(.1*np.pi*np.arange(200))+.1
+	#speed_c = np.sin(.1*np.pi*np.arange(200))+.3
 
 
-file = open("distance.txt")
+	down_a = down_sample(speed_a, 100)
+	down_b = down_sample(speed_b, 100)
+	down_c = down_sample(speed_c, 100)
 
-speed = np.array([float(elem) for elem in file.readline()[1:-2].split(',')])
-distance = np.array([float(elem) for elem in file.readline()[1:-2].split(',')])
+	down_a /= max(down_a)	
+	down_b /= max(down_b)
+	down_c /= max(down_c)
 
-down_sampled_speed = down_sample(speed, 100)
-	
-down_sampled_speed /= max(down_sampled_speed)
-
-plt.figure()
-plt.plot(speed)
-plt.figure()
-plt.plot(down_sampled_speed)
-plt.show()
+	print temporal_similarity(down_a ,down_b)
+	plt.figure()
+	plt.plot(speed_a)
+	plt.plot(speed_b,'r')
+	plt.plot(speed_c,'g')
+	plt.figure()
+	plt.plot(down_a)
+	plt.plot(down_b,'r')
+	plt.plot(down_c,'g')
+	plt.show()
 
