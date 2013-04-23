@@ -32,6 +32,7 @@ def make_data(file):
 class AnnoteFinder:
 
 	def __init__(self, xdata, ydata, colordata, distdata, durdata, pacedata, caloriedata, fueldata,  axis=None, xtol=None, ytol=None):
+		print len(xdata), len(ydata), len(colordata), len(distdata), len(durdata)
 		self.data = zip(xdata, ydata, colordata, distdata, durdata, pacedata, caloriedata, fueldata)
 		if xtol is None:
 		  xtol = ((max(xdata) - min(xdata))/float(len(xdata)))/2
@@ -60,7 +61,11 @@ class AnnoteFinder:
 			for x,y,c,di,du,pa,cal,fu in self.data:
 			  if  clickX-self.xtol < x < clickX+self.xtol and  clickY-self.ytol < y < clickY+self.ytol :
 				print "TRUE", x, y, c,di,du,pa,cal,fu
-
+				global a
+				global figsrc
+				global n_clusters
+				a.set_bbox(dict(facecolor=cm.spectral(float(c) / n_clusters, 1), alpha=.5))
+				figsrc.canvas.draw()
 
 random_state = np.random.RandomState(0)
 
@@ -73,8 +78,7 @@ n_clusters = 6
 	
 figsrc = figure()
 #left, bottom
-a = figtext(.4,.4, "TEST") 
-a.set_text("PASSED")
+a = figtext(.4,.4, "CLUSTER", bbox = dict(facecolor='red', alpha=.5)) 
 #figsrc.subplots_adjust(bottom = .5, left = .05, right = .95, top = .95)
 axsrc = figsrc.add_subplot(211, autoscale_on=True)	
 
@@ -99,18 +103,19 @@ for line in in_file:
 	for workout in data['workouts']:
 		try:
 			sum += np.array(workout['basic'])
-			dist.append(workout['basic'][0])
-			dur.append(workout['basic'][1])
-			pace.append(workout['basic'][2])
-			calories.append(workout['basic'][3])
-			fuel.append(workout['basic'][4])
 		except:
 			invalid = True
 	if invalid:
 		continue
-	#put this vector in annote finder. [distance in km, duration in minutes, average pace in min/mile, calories, fuel]
-	vector = sum/float(len(data['workouts']))
-	X.append(vector)
+	else:
+		#put this vector in annote finder. [distance in km, duration in minutes, average pace in min/mile, calories, fuel]
+		vector = sum/float(len(data['workouts']))
+		dist.append(vector[0])
+		dur.append(vector[1])
+		pace.append(vector[2])
+		calories.append(vector[3])
+		fuel.append(vector[4])
+		X.append(vector)
 X = np.array(X)
 
 km = MiniBatchKMeans(k=n_clusters, init='random', n_init=10,
@@ -136,7 +141,7 @@ for k in range(n_clusters):
     color = cm.spectral(float(k) / n_clusters, 1)
     x.extend(X[my_members, 0])
     y.extend(X[my_members, 1])
-    for i in range(0,len(x)):
+    for i in range(0,len(X[my_members])):
 		c.append(k)
     plot(X[my_members, 0], X[my_members, 1], 'o', marker='.', c=color)
     #cluster_center = km.cluster_centers_[k]
