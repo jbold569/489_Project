@@ -31,8 +31,8 @@ def make_data(file):
 
 class AnnoteFinder:
 
-	def __init__(self, xdata, ydata, colordata, axis=None, xtol=None, ytol=None):
-		self.data = zip(xdata, ydata, colordata)
+	def __init__(self, xdata, ydata, colordata, distdata, durdata, pacedata, caloriedata, fueldata,  axis=None, xtol=None, ytol=None):
+		self.data = zip(xdata, ydata, colordata, distdata, durdata, pacedata, caloriedata, fueldata)
 		if xtol is None:
 		  xtol = ((max(xdata) - min(xdata))/float(len(xdata)))/2
 		if ytol is None:
@@ -57,9 +57,9 @@ class AnnoteFinder:
 		  clickX = event.xdata
 		  clickY = event.ydata
 		  if self.axis is None or self.axis==event.inaxes:
-			for x,y,c in self.data:
+			for x,y,c,di,du,pa,cal,fu in self.data:
 			  if  clickX-self.xtol < x < clickX+self.xtol and  clickY-self.ytol < y < clickY+self.ytol :
-				print "TRUE", x, y, c
+				print "TRUE", x, y, c,di,du,pa,cal,fu
 
 
 random_state = np.random.RandomState(0)
@@ -83,6 +83,14 @@ axsrc.set_title('Right Click to Zoom')
 in_file = open("..\Exploratory Analysis\clean_data.txt", 'r')
 
 X = []
+x = []
+y = []
+c = []
+dist = []
+dur = []
+pace = []
+calories = []
+fuel = []
 import json
 for line in in_file:
 	data = json.loads(line)
@@ -91,16 +99,20 @@ for line in in_file:
 	for workout in data['workouts']:
 		try:
 			sum += np.array(workout['basic'])
+			dist.append(workout['basic'][0])
+			dur.append(workout['basic'][1])
+			pace.append(workout['basic'][2])
+			calories.append(workout['basic'][3])
+			fuel.append(workout['basic'][4])
 		except:
 			invalid = True
 	if invalid:
 		continue
+	#put this vector in annote finder. [distance in km, duration in minutes, average pace in min/mile, calories, fuel]
 	vector = sum/float(len(data['workouts']))
 	X.append(vector)
 X = np.array(X)
-x = []
-y = []
-c = []
+
 km = MiniBatchKMeans(k=n_clusters, init='random', n_init=10,
                      random_state=random_state).fit(X)
 
@@ -129,7 +141,6 @@ for k in range(n_clusters):
     plot(X[my_members, 0], X[my_members, 1], 'o', marker='.', c=color)
     #cluster_center = km.cluster_centers_[k]
     cluster_center = find_center(X[my_members])
-    print cluster_center
     plot(cluster_center[0], cluster_center[1], 'o',
             markerfacecolor=color, markeredgecolor='k', markersize=6)
     title("Example cluster allocation with a single random init\n"
@@ -140,10 +151,10 @@ master_ly_lim = axsrc.get_ylim()[0]
 master_ux_lim = axsrc.get_xlim()[1]
 master_uy_lim = axsrc.get_ylim()[1]
 
-v_line = axvline(x = .5, linewidth = 4, color='r')
-h_line = axhline(y=.5, linewidth = 4, color = 'b')
+v_line = axvline(x = .5, linewidth = 1, color='r')
+h_line = axhline(y=.5, linewidth = 1, color = 'b')
 
-af = AnnoteFinder(x,y,c, None, None, None)
+af = AnnoteFinder(x,y,c,dist,dur,pace,calories,fuel, None, None, None)
 
 figsrc.canvas.mpl_connect('button_press_event', af)
 #left, bottom, width, height
