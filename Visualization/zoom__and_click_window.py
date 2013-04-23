@@ -109,7 +109,16 @@ pca = decomposition.PCA(n_components=2)
 pca.fit(X)
 X = pca.transform(X)
 print X.shape
-					 
+
+
+def find_center(points):
+    total_x = 0
+    total_y = 0
+    for X in points:
+        total_x += X[0]
+        total_y += X[1]
+    return [float(total_x)/len(points), float(total_y) / len(points)]
+        
 for k in range(n_clusters):
     my_members = km.labels_ == k
     color = cm.spectral(float(k) / n_clusters, 1)
@@ -118,7 +127,9 @@ for k in range(n_clusters):
     for i in range(0,len(x)):
 		c.append(k)
     plot(X[my_members, 0], X[my_members, 1], 'o', marker='.', c=color)
-    cluster_center = km.cluster_centers_[k]
+    #cluster_center = km.cluster_centers_[k]
+    cluster_center = find_center(X[my_members])
+    print cluster_center
     plot(cluster_center[0], cluster_center[1], 'o',
             markerfacecolor=color, markeredgecolor='k', markersize=6)
     title("Example cluster allocation with a single random init\n"
