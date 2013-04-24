@@ -13,6 +13,7 @@ from sklearn.cluster import MiniBatchKMeans
 from sklearn.cluster import KMeans
 from sklearn import decomposition
 import matplotlib.cm as cm
+import json
 
 def get_speed(file):
 	speed = []
@@ -32,11 +33,13 @@ def make_data(file):
 class slider_tracker:
 	def __init__(self, data):
 		self.origin = data
-		self. pace = 0
-		self.dist = 0
-		self.dur = 0
-		self.cal = 0
-		self.fuel = 0
+		self.origin_length = len(data)
+		self. pace = 9
+		self.dist = 5
+		self.dur = 30
+		self.cal = 300
+		self.fuel = 1000
+		self.pca = decomposition.PCA(n_components=2)
 	def update_pace(self,data):
 		self.pace = data
 	def update_dist(self,data):
@@ -48,28 +51,24 @@ class slider_tracker:
 	def update_fuel(self,data):
 		self.fuel = data
 	def update_graph(self):
-		print self.pace, self.dist, self.dur, self.cal, self.fuel
+		vector = np.array([float(self.dist), float(self.dur), float(self.pace), float(self.cal), float(self.fuel)])
+		new_data = [row[:] for row in self.origin]
+		new_data.append(vector)
+		new_data = np.array(new_data)
+		self.pca.fit(new_data)
+		new_data = pca.transform(new_data)
+		return new_data[-1]
+
 	def reset_graph(self):
 		s_speed.reset()
 		s_distance.reset()
 		s_cal.reset()
 		s_fuel.reset()
-		s_dur.reset()
-		print "reseting"
+		s_dur.reset()	
 
 class AnnoteFinder:
 
 	def __init__(self, xdata, ydata, colordata, distdata, durdata, pacedata, caloriedata, fueldata,  axis=None, xtol=None, ytol=None):
-		cur_max = 0
-		cur_max_index = 0
-		for i in range (0, len(caloriedata)):
-			if caloriedata[i] > cur_max:
-				cur_max = caloriedata[i]
-				cur_max_index = i
-		print "workout with max calories:"
-		print "\t calories: ", caloriedata[cur_max_index]
-		print "\t distance: ", distdata[cur_max_index]
-		print "\t pace: ", pacedata[cur_max_index]
 		self.data = zip(xdata, ydata, colordata, distdata, durdata, pacedata, caloriedata, fueldata)
 		if xtol is None:
 		  xtol = ((max(xdata) - min(xdata))/float(len(xdata)))/2
@@ -139,7 +138,7 @@ dur = []
 pace = []
 calories = []
 fuel = []
-import json
+
 for line in in_file:
 	data = json.loads(line)
 	sum = np.zeros(5)
@@ -160,19 +159,15 @@ for line in in_file:
 		calories.append(vector[3])
 		fuel.append(vector[4])
 		X.append(vector)
-X = np.array(X)
-
 slider_tracker = slider_tracker(X)
+X = np.array(X)
 
 km = MiniBatchKMeans(k=n_clusters, init='random', n_init=10,
                      random_state=random_state).fit(X)
 
-print X.shape
 pca = decomposition.PCA(n_components=2)
 pca.fit(X)
 X = pca.transform(X)
-print X.shape
-
 
 def find_center(points):
     total_x = 0
@@ -201,8 +196,8 @@ master_ly_lim = axsrc.get_ylim()[0]
 master_ux_lim = axsrc.get_xlim()[1]
 master_uy_lim = axsrc.get_ylim()[1]
 
-v_line = axvline(x = .5, linewidth = 1, color='r')
-h_line = axhline(y=.5, linewidth = 1, color = 'b')
+v_line = axvline(x = 0, linewidth = 1, color='r')
+h_line = axhline(y=0, linewidth = 1, color = 'b')
 
 af = AnnoteFinder(x,y,c,dist,dur,pace,calories,fuel, None, .3, .3)
 
@@ -251,8 +246,7 @@ def update_sliders(val):
 	slider_tracker.update_dur(s_dur.val)
 	slider_tracker.update_cal(s_cal.val)
 	slider_tracker.update_fuel(s_fuel.val)
-	slider_tracker.update_graph()
-	figsrc.canvas.draw()
+
 
 def to_pace(event):
 	global auxdist,auxpace
@@ -273,6 +267,31 @@ def reset_area(event):
 	axsrc.set_ylim(master_ly_lim, master_uy_lim)
 	draw()
 	
+def update_graph(event):
+	new_points = slider_tracker.update_graph()
+	print new_points
+	v_line.set_xdata(new_points[0])
+	h_line.set_ydata(new_points[1])
+	draw()
+	
+def reset_graph(event):
+	s_speed.reset()
+	s_distance.reset()
+	s_cal.reset()
+	s_fuel.reset()
+	s_dur.reset()
+	new_points = slider_tracker.update_graph()
+	print new_points
+	v_line.set_xdata(new_points[0])
+	h_line.set_ydata(new_points[1])
+	draw()
+	
+def init_graph():
+	new_points = slider_tracker.update_graph()
+	print new_points
+	v_line.set_xdata(new_points[0])
+	h_line.set_ydata(new_points[1])
+
 s_speed.on_changed(update_sliders)
 s_distance.on_changed(update_sliders)
 s_cal.on_changed(update_sliders)
@@ -282,7 +301,9 @@ s_dur.on_changed(update_sliders)
 b_pace.on_clicked(to_pace)
 b_dist.on_clicked(to_dist)
 b_reset.on_clicked(reset_area)
-
+b_update_graph.on_clicked(update_graph)
+b_reset_graph.on_clicked(reset_graph)
+init_graph()
 show()
 
 
