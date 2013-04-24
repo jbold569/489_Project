@@ -30,6 +30,65 @@ def get_dist(file):
 def make_data(file):
     return np.genfromtxt(file, delimiter = ',')
 	
+def reset_area(event):
+	axsrc.set_xlim(master_lx_lim, master_ux_lim)
+	axsrc.set_ylim(master_ly_lim, master_uy_lim)
+	draw()
+	
+def update_graph(event):
+	new_points = slider_tracker.update_graph()
+	print new_points
+	v_line.set_xdata(new_points[0])
+	h_line.set_ydata(new_points[1])
+	draw()
+	
+def reset_graph(event):
+	s_speed.reset()
+	s_distance.reset()
+	s_cal.reset()
+	s_fuel.reset()
+	s_dur.reset()
+	new_points = slider_tracker.update_graph()
+	print new_points
+	v_line.set_xdata(new_points[0])
+	h_line.set_ydata(new_points[1])
+	draw()
+	
+def init_graph():
+	new_points = slider_tracker.update_graph()
+	print new_points
+	v_line.set_xdata(new_points[0])
+	h_line.set_ydata(new_points[1])
+	
+def find_center(points):
+    total_x = 0
+    total_y = 0
+    for X in points:
+        total_x += X[0]
+        total_y += X[1]
+    return [float(total_x)/len(points), float(total_y) / len(points)]
+	
+def update_sliders(val):
+	slider_tracker.update_pace(s_speed.val)
+	slider_tracker.update_dist(s_distance.val)
+	slider_tracker.update_dur(s_dur.val)
+	slider_tracker.update_cal(s_cal.val)
+	slider_tracker.update_fuel(s_fuel.val)
+	
+def to_pace(event):
+	global auxdist,auxpace
+	delaxes(auxdist)
+	auxpace = figsrc.add_subplot(224)
+	auxpace.hist(speed, bins = buckets)
+	draw()
+	
+def to_dist(event):
+	global auxdist,auxpace
+	delaxes(auxpace)
+	auxdist = figsrc.add_subplot(224)
+	auxdist.hist(dist, bins = buckets)
+	draw()
+	
 class slider_tracker:
 	def __init__(self, data):
 		self.origin = data
@@ -168,14 +227,6 @@ km = MiniBatchKMeans(k=n_clusters, init='random', n_init=10,
 pca = decomposition.PCA(n_components=2)
 pca.fit(X)
 X = pca.transform(X)
-
-def find_center(points):
-    total_x = 0
-    total_y = 0
-    for X in points:
-        total_x += X[0]
-        total_y += X[1]
-    return [float(total_x)/len(points), float(total_y) / len(points)]
         
 for k in range(n_clusters):
     my_members = km.labels_ == k
@@ -235,62 +286,9 @@ dist = get_dist(dist_in)
 speed_in.close()
 dist_in.close()
 
-
 auxdist = None
 auxpace = figsrc.add_subplot(224)
 auxpace.hist(speed, bins = buckets)	
-
-def update_sliders(val):
-	slider_tracker.update_pace(s_speed.val)
-	slider_tracker.update_dist(s_distance.val)
-	slider_tracker.update_dur(s_dur.val)
-	slider_tracker.update_cal(s_cal.val)
-	slider_tracker.update_fuel(s_fuel.val)
-
-
-def to_pace(event):
-	global auxdist,auxpace
-	delaxes(auxdist)
-	auxpace = figsrc.add_subplot(224)
-	auxpace.hist(speed, bins = buckets)
-	draw()
-	
-def to_dist(event):
-	global auxdist,auxpace
-	delaxes(auxpace)
-	auxdist = figsrc.add_subplot(224)
-	auxdist.hist(dist, bins = buckets)
-	draw()
-	
-def reset_area(event):
-	axsrc.set_xlim(master_lx_lim, master_ux_lim)
-	axsrc.set_ylim(master_ly_lim, master_uy_lim)
-	draw()
-	
-def update_graph(event):
-	new_points = slider_tracker.update_graph()
-	print new_points
-	v_line.set_xdata(new_points[0])
-	h_line.set_ydata(new_points[1])
-	draw()
-	
-def reset_graph(event):
-	s_speed.reset()
-	s_distance.reset()
-	s_cal.reset()
-	s_fuel.reset()
-	s_dur.reset()
-	new_points = slider_tracker.update_graph()
-	print new_points
-	v_line.set_xdata(new_points[0])
-	h_line.set_ydata(new_points[1])
-	draw()
-	
-def init_graph():
-	new_points = slider_tracker.update_graph()
-	print new_points
-	v_line.set_xdata(new_points[0])
-	h_line.set_ydata(new_points[1])
 
 s_speed.on_changed(update_sliders)
 s_distance.on_changed(update_sliders)
