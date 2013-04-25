@@ -82,7 +82,7 @@ def to_pace(event):
 	except:
 		None
 	aux_aux = figsrc.add_subplot(224)
-	aux_aux.hist(pace, bins = buckets)
+	aux_aux.hist(pace, bins = pace_buckets)
 	draw()
 	
 def to_dist(event):
@@ -107,12 +107,22 @@ def to_dur(event):
 	
 def to_cal(event):
 	global aux_aux
-	auxcal = figsrc.add_subplot(224)
+	try:
+		delaxes(aux_aux)
+	except:
+		None
+	aux_aux = figsrc.add_subplot(224)
+	aux_aux.hist(calories, bins = cal_buckets)
 	draw()
 	
 def to_fuel(event):
 	global aux_aux
-	auxfuel = figsrc.add_subplot(224)
+	try:
+		delaxes(aux_aux)
+	except:
+		None
+	aux_aux = figsrc.add_subplot(224)
+	aux_aux.hist(fuel, bins = fuel_buckets)
 	draw()
 	
 class slider_tracker:
@@ -298,7 +308,6 @@ cal_ax = axes([.92,.22,.05,.05])
 fuel_ax = axes([.92,.16,.05,.05])
 distance_ax = axes([.92,.40,.05,.05])
 reset_ax = axes([.92,.75,.05,.05])
-
 update_graph_ax = axes([.05,.02,.09,.05])
 reset_cross_ax = axes([.16,.02,.09,.05])
 
@@ -307,6 +316,7 @@ s_distance = Slider(dist_slider, "Distance", 0, 30, valinit = 5)
 s_cal = Slider(cal_slider, "Calories", 0, 5000, valinit = 300)
 s_fuel = Slider(fuel_slider, "Fuel", 0, 14000, valinit = 1000)
 s_dur = Slider(dur_slider, "Duration", 0, 1000, valinit = 30)
+
 b_pace = Button(pace_ax, "Pace")
 b_dist = Button(distance_ax, "Dist")
 b_dur = Button(dur_ax, "Duration")
@@ -316,8 +326,11 @@ b_reset = Button (reset_ax, "Reset")
 b_update_graph = Button(update_graph_ax, "Update Crosshairs")
 b_reset_graph = Button(reset_cross_ax, "Reset Crosshairs")
 
-buckets = [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 10.5, 11.0, 11.5, 12.0, 12.5]
+buckets = [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 10.5, 11.0, 11.5, 12.0, 12.5,13,13.5,14,14.5]
+pace_buckets = [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 10.5, 11.0, 11.5, 12.0, 12.5,13,13.5,14,14.5]
 dur_buckets = [0.0,  5.0,10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0, 100.0, 105.0]
+cal_buckets = [0,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,1000.0,1050,1100,1150,1200,1250,1300,1350,1400,1450,1500]
+fuel_buckets = [0,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,1000.0,1050,1100,1150,1200,1250,1300,1350,1400,1450,1500,1550,1600,1650,1700,1750,1800,1850,1900,1950,2000]
 
 
 aux_aux = None
@@ -336,7 +349,6 @@ b_fuel.on_clicked(to_fuel)
 b_reset.on_clicked(reset_area)
 b_update_graph.on_clicked(update_graph)
 b_reset_graph.on_clicked(reset_graph)
+
 init_graph()
 show()
-
-
