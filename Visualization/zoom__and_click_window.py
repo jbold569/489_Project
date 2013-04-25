@@ -76,17 +76,70 @@ def update_sliders(val):
 	slider_tracker.update_fuel(s_fuel.val)
 	
 def to_pace(event):
-	global auxdist,auxpace
-	delaxes(auxdist)
+	global auxdist,auxpace, auxcal, auxfuel, auxdur
+	if auxdist:
+		delaxes(auxdist)
+	if auxcal:
+		delaxes(auxcal)
+	if auxfuel:
+		delaxes(auxfuel)
+	if auxdur:
+		delaxes(auxdur)
 	auxpace = figsrc.add_subplot(224)
-	auxpace.hist(speed, bins = buckets)
+	auxpace.hist(pace, bins = buckets)
 	draw()
 	
 def to_dist(event):
-	global auxdist,auxpace
-	delaxes(auxpace)
+	global auxdist,auxpace, auxcal, auxfuel, auxdur
+	if auxpace:
+		delaxes(auxpace)
+	elif auxcal:
+		delaxes(auxcal)
+	elif auxfuel:
+		delaxes(auxfuel)
+	elif auxdur:
+		dexaxes(auxdur)
 	auxdist = figsrc.add_subplot(224)
 	auxdist.hist(dist, bins = buckets)
+	draw()
+	
+def to_dur(event):
+	global auxdist,auxpace, auxcal, auxfuel, auxdur
+	if auxdist:
+		delaxes(auxdist)
+	elif auxpace:
+		delaxes(auxpace)
+	elif auxcal:
+		delaxes(auxcal)
+	elif auxfuel:
+		delaxes(auxfuel)
+	auxdur = figsrc.add_subplot(224)
+	draw()
+	
+def to_cal(event):
+	global auxdist,auxpace, auxcal, auxfuel, auxdur
+	if auxdist:
+		delaxes(auxdist)
+	elif auxpace:
+		delaxes(auxpace)
+	elif auxfuel:
+		delaxes(auxfuel)
+	elif auxdur:
+		delaxes(auxdur)
+	auxcal = figsrc.add_subplot(224)
+	draw()
+	
+def to_fuel(event):
+	global auxdist,auxpace, auxcal, auxfuel, auxdur
+	if auxdist:
+		delaxes(auxdist)
+	if auxpace:
+		delaxes(auxpace)
+	if auxcal:
+		delaxes(auxcal)
+	if auxdur:
+		delaxes(auxdur)
+	auxfuel = figsrc.add_subplot(224)
 	draw()
 	
 class slider_tracker:
@@ -221,6 +274,12 @@ for line in in_file:
 slider_tracker = slider_tracker(X)
 X = np.array(X)
 
+maxi = 0
+for item in dur:
+	if item > maxi:
+		maxi = item
+print "duration max: ", maxi
+
 km = MiniBatchKMeans(k=n_clusters, init='random', n_init=10,
                      random_state=random_state).fit(X)
 
@@ -260,8 +319,11 @@ dist_slider = axes([0.05,0.29,0.2,0.03])
 cal_slider = axes([.05,.14,.2,.03])
 dur_slider = axes([.05,.24,.2,.03])
 fuel_slider = axes([.05,.09,.2,.03])
-pace_ax = axes([.92,.31,.05,.05])
-distance_ax = axes([.92,.24,.05,.05])
+pace_ax = axes([.92,.28,.05,.05])
+dur_ax = axes([.92,.34,.05,.05])
+cal_ax = axes([.92,.22,.05,.05])
+fuel_ax = axes([.92,.16,.05,.05])
+distance_ax = axes([.92,.40,.05,.05])
 reset_ax = axes([.92,.75,.05,.05])
 
 update_graph_ax = axes([.05,.02,.09,.05])
@@ -274,6 +336,9 @@ s_fuel = Slider(fuel_slider, "Fuel", 0, 14000, valinit = 1000)
 s_dur = Slider(dur_slider, "Duration", 0, 1000, valinit = 30)
 b_pace = Button(pace_ax, "Pace")
 b_dist = Button(distance_ax, "Dist")
+b_dur = Button(dur_ax, "Duration")
+b_cal = Button(cal_ax, "Calories")
+b_fuel = Button(fuel_ax, "Fuel")
 b_reset = Button (reset_ax, "Reset")
 b_update_graph = Button(update_graph_ax, "Update Crosshairs")
 b_reset_graph = Button(reset_cross_ax, "Reset Crosshairs")
@@ -287,8 +352,11 @@ speed_in.close()
 dist_in.close()
 
 auxdist = None
+auxcal = None
+auxfuel = None
+auxdur = None
 auxpace = figsrc.add_subplot(224)
-auxpace.hist(speed, bins = buckets)	
+auxpace.hist(pace, bins = buckets)	
 
 s_speed.on_changed(update_sliders)
 s_distance.on_changed(update_sliders)
@@ -298,6 +366,9 @@ s_dur.on_changed(update_sliders)
 
 b_pace.on_clicked(to_pace)
 b_dist.on_clicked(to_dist)
+b_dur.on_clicked(to_dur)
+b_cal.on_clicked(to_cal)
+b_fuel.on_clicked(to_fuel)
 b_reset.on_clicked(reset_area)
 b_update_graph.on_clicked(update_graph)
 b_reset_graph.on_clicked(reset_graph)
