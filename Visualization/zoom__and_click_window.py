@@ -76,69 +76,42 @@ def update_sliders(val):
 	slider_tracker.update_fuel(s_fuel.val)
 	
 def to_pace(event):
-	global auxdist,auxpace, auxcal, auxfuel, auxdur
-	if auxdist:
-		delaxes(auxdist)
-	if auxcal:
-		delaxes(auxcal)
-	if auxfuel:
-		delaxes(auxfuel)
-	if auxdur:
-		delaxes(auxdur)
-	auxpace = figsrc.add_subplot(224)
-	auxpace.hist(pace, bins = buckets)
+	global aux_aux
+	try:
+		delaxes(aux_aux)
+	except:
+		None
+	aux_aux = figsrc.add_subplot(224)
+	aux_aux.hist(pace, bins = buckets)
 	draw()
 	
 def to_dist(event):
-	global auxdist,auxpace, auxcal, auxfuel, auxdur
-	if auxpace:
-		delaxes(auxpace)
-	elif auxcal:
-		delaxes(auxcal)
-	elif auxfuel:
-		delaxes(auxfuel)
-	elif auxdur:
-		dexaxes(auxdur)
-	auxdist = figsrc.add_subplot(224)
-	auxdist.hist(dist, bins = buckets)
+	global aux_aux
+	try:
+		delaxes(aux_aux)
+	except:
+		None
+	aux_aux = figsrc.add_subplot(224)
+	aux_aux.hist(dist, bins = buckets)
 	draw()
 	
 def to_dur(event):
-	global auxdist,auxpace, auxcal, auxfuel, auxdur
-	if auxdist:
-		delaxes(auxdist)
-	elif auxpace:
-		delaxes(auxpace)
-	elif auxcal:
-		delaxes(auxcal)
-	elif auxfuel:
-		delaxes(auxfuel)
-	auxdur = figsrc.add_subplot(224)
+	global aux_aux
+	try:
+		delaxes(aux_aux)
+	except:
+		None
+	aux_aux = figsrc.add_subplot(224)
+	aux_aux.hist(dur, bins = dur_buckets)
 	draw()
 	
 def to_cal(event):
-	global auxdist,auxpace, auxcal, auxfuel, auxdur
-	if auxdist:
-		delaxes(auxdist)
-	elif auxpace:
-		delaxes(auxpace)
-	elif auxfuel:
-		delaxes(auxfuel)
-	elif auxdur:
-		delaxes(auxdur)
+	global aux_aux
 	auxcal = figsrc.add_subplot(224)
 	draw()
 	
 def to_fuel(event):
-	global auxdist,auxpace, auxcal, auxfuel, auxdur
-	if auxdist:
-		delaxes(auxdist)
-	if auxpace:
-		delaxes(auxpace)
-	if auxcal:
-		delaxes(auxcal)
-	if auxdur:
-		delaxes(auxdur)
+	global aux_aux
 	auxfuel = figsrc.add_subplot(224)
 	draw()
 	
@@ -344,19 +317,10 @@ b_update_graph = Button(update_graph_ax, "Update Crosshairs")
 b_reset_graph = Button(reset_cross_ax, "Reset Crosshairs")
 
 buckets = [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 10.5, 11.0, 11.5, 12.0, 12.5]
-speed_in = open("speed.txt",'r')
-dist_in = open("dist.txt", 'r')
-speed = get_speed(speed_in)
-dist = get_dist(dist_in)
-speed_in.close()
-dist_in.close()
+dur_buckets = [0.0,  5.0,10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0, 100.0, 105.0]
 
-auxdist = None
-auxcal = None
-auxfuel = None
-auxdur = None
-auxpace = figsrc.add_subplot(224)
-auxpace.hist(pace, bins = buckets)	
+
+aux_aux = None
 
 s_speed.on_changed(update_sliders)
 s_distance.on_changed(update_sliders)
