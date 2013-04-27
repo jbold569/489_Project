@@ -13,7 +13,7 @@ from sklearn.cluster import MiniBatchKMeans
 from sklearn.cluster import KMeans
 from sklearn import decomposition
 import matplotlib.cm as cm
-import json
+import json, utils
 
 def get_speed(file):
 	speed = []
@@ -66,8 +66,11 @@ def find_center(points):
     for X in points:
         total_x += X[0]
         total_y += X[1]
-    return [float(total_x)/len(points), float(total_y) / len(points)]
-	
+	try:
+		return [float(total_x)/len(points), float(total_y) / len(points)]
+	except:
+		return [0,0]
+		
 def update_sliders(val):
 	slider_tracker.update_pace(s_speed.val)
 	slider_tracker.update_dist(s_distance.val)
@@ -278,9 +281,9 @@ for item in dur:
 		maxi = item
 print "duration max: ", maxi
 
-km = MiniBatchKMeans(k=n_clusters, init='random', n_init=10,
-                     random_state=random_state).fit(X)
-
+#centers = utils.canopy_clustering(0.5, 0.65, X, utils.cosine_simularity)
+#print "Number of seeds: ", len(centers)
+km = MiniBatchKMeans(k=10, init='random').fit(X)
 pca = decomposition.PCA(n_components=2)
 pca.fit(X)
 X = pca.transform(X)
