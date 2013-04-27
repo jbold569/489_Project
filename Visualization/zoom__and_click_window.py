@@ -2,7 +2,7 @@ import math
 import pylab
 import matplotlib
 from matplotlib.pyplot import figure, show
-from matplotlib.widgets import Slider, Button, RadioButtons
+from matplotlib.widgets import Slider, Button, RadioButtons, CheckButtons
 import numpy
 import matplotlib.lines as lines
 import matplotlib.gridspec as gridspec
@@ -109,6 +109,28 @@ def to_fuel(event):
 	xlabel("Fuel Points")
 	ylabel("Number of People")
 	draw()
+	
+class Cluster_Manager:
+	def __init__(self, master_X):
+		self.master = master_X
+		self.dist = True
+		self.dur = True
+		self.pace = True
+		self.fuel = True
+		self.cal = True
+	def __call__(self, event):
+		if event == 'dist' : self.dist = not(self.dist)
+		elif event == 'dur' : self.dur = not(self.dur)
+		elif event == 'pace' : self.pace = not(self.pace)
+		elif event == 'cal' : self.cal = not(self.cal)
+		elif event == 'fuel' : self.fuel = not(self.fuel)
+		print self.dist
+		print self.dur
+		print self.pace
+		print self.fuel
+		print self.cal
+		print ""
+		
 	
 class AnnoteFinder:
 
@@ -222,6 +244,8 @@ pace = []
 calories = []
 fuel = []
 
+cluster_man = None
+
 for line in in_file:
 	data = json.loads(line)
 	sum = np.zeros(5)
@@ -242,6 +266,7 @@ for line in in_file:
 		calories.append(vector[3])
 		fuel.append(vector[4])
 		X.append(vector)
+cluster_man = Cluster_Manager(X)
 X = np.array(X)
 
 km = MiniBatchKMeans(k=n_clusters, init='random', n_init=10,
@@ -283,6 +308,10 @@ fuel_ax = axes([.92,.16,.05,.05])
 distance_ax = axes([.92,.40,.05,.05])
 reset_ax = axes([.92,.75,.05,.05])
 
+clust_ax = axes([.03,.65,.05,.05])
+rax = axes([.03, .75, .05,.15])
+check = CheckButtons(rax, ('dist','dur','pace','cal','fuel'),(True, True, True, True, True))
+
 
 b_pace = Button(pace_ax, "Pace")
 b_dist = Button(distance_ax, "Dist")
@@ -290,6 +319,7 @@ b_dur = Button(dur_ax, "Duration")
 b_cal = Button(cal_ax, "Calories")
 b_fuel = Button(fuel_ax, "Fuel")
 b_reset = Button (reset_ax, "Reset")
+b_reclust = Button(clust_ax, "Cluster")
 
 
 buckets = [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 10.5, 11.0, 11.5, 12.0, 12.5,13,13.5,14,14.5]
@@ -310,5 +340,6 @@ b_dur.on_clicked(to_dur)
 b_cal.on_clicked(to_cal)
 b_fuel.on_clicked(to_fuel)
 b_reset.on_clicked(reset_area)
+check.on_clicked(cluster_man)
 
 show()
