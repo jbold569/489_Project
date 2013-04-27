@@ -13,7 +13,7 @@ from sklearn.cluster import MiniBatchKMeans
 from sklearn.cluster import KMeans
 from sklearn import decomposition
 import matplotlib.cm as cm
-import json, utils
+import json
 
 x = []
 y = []
