@@ -83,6 +83,9 @@ def to_pace(event):
 		None
 	aux_aux = figsrc.add_subplot(224)
 	aux_aux.hist(pace, bins = pace_buckets)
+	title("Pace")
+	xlabel("Duration (mi/min)")
+	ylabel("Number of People")
 	draw()
 	
 def to_dist(event):
@@ -93,6 +96,9 @@ def to_dist(event):
 		None
 	aux_aux = figsrc.add_subplot(224)
 	aux_aux.hist(dist, bins = buckets)
+	title("Distance")
+	xlabel("Distance (km)")
+	ylabel("Number of People")
 	draw()
 	
 def to_dur(event):
@@ -103,6 +109,9 @@ def to_dur(event):
 		None
 	aux_aux = figsrc.add_subplot(224)
 	aux_aux.hist(dur, bins = dur_buckets)
+	title("Duration")
+	xlabel("Duration (min)")
+	ylabel("Number of People")
 	draw()
 	
 def to_cal(event):
@@ -113,6 +122,9 @@ def to_cal(event):
 		None
 	aux_aux = figsrc.add_subplot(224)
 	aux_aux.hist(calories, bins = cal_buckets)
+	title("Calories")
+	xlabel("Calories Burnt")
+	ylabel("Number of People")
 	draw()
 	
 def to_fuel(event):
@@ -123,6 +135,9 @@ def to_fuel(event):
 		None
 	aux_aux = figsrc.add_subplot(224)
 	aux_aux.hist(fuel, bins = fuel_buckets)
+	title("Fuel")
+	xlabel("Fuel Points")
+	ylabel("Number of People")
 	draw()
 	
 class slider_tracker:
@@ -282,8 +297,7 @@ for k in range(n_clusters):
     cluster_center = find_center(X[my_members])
     plot(cluster_center[0], cluster_center[1], 'o',
             markerfacecolor=color, markeredgecolor='k', markersize=6)
-    title("Example cluster allocation with a single random init\n"
-             "with MiniBatchKMeans")
+    title("Cluster View")
 master_lx_lim = axsrc.get_xlim()[0]
 master_ly_lim = axsrc.get_ylim()[0]
 master_ux_lim = axsrc.get_xlim()[1]
