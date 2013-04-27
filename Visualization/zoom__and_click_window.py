@@ -15,6 +15,8 @@ from sklearn import decomposition
 import matplotlib.cm as cm
 import json
 
+figsrc = figure()
+
 x = []
 y = []
 c = []
@@ -38,11 +40,6 @@ def get_dist(file):
 	
 def make_data(file):
 	return np.genfromtxt(file, delimiter = ',')
-	
-def reset_area(event):
-	axsrc.set_xlim(master_lx_lim, master_ux_lim)
-	axsrc.set_ylim(master_ly_lim, master_uy_lim)
-	draw()
 	
 	
 def find_center(points):
@@ -146,7 +143,7 @@ class Cluster_Manager:
 		self.bool_vec = [self.dist,self.dur,self.pace,self.fuel,self.cal, ]
 		
 	def Cluster(self, event=None):
-		global x,y,c,dist,dur,pace,calories,fuel
+		global x,y,c,dist,dur,pace,calories,fuel,figsrc
 		
 		print self.bool_vec
 		
@@ -178,12 +175,20 @@ class Cluster_Manager:
 			plot(cluster_center[0], cluster_center[1], 'o',
 				markerfacecolor=color, markeredgecolor='k', markersize=7)
 			title("Cluster View")
-		master_lx_lim = self.axsrc.get_xlim()[0]
-		master_ly_lim = self.axsrc.get_ylim()[0]
-		master_ux_lim = self.axsrc.get_xlim()[1]
-		master_uy_lim = self.axsrc.get_ylim()[1]
-		self.af = AnnoteFinder(x,y,c,dist,dur,pace,calories,fuel, None)
 
+		self.master_lx_lim = self.axsrc.get_xlim()[0]
+		self.master_ly_lim = self.axsrc.get_ylim()[0]
+		self.master_ux_lim = self.axsrc.get_xlim()[1]
+		self.master_uy_lim = self.axsrc.get_ylim()[1]
+		self.af = AnnoteFinder(x,y,c,dist,dur,pace,calories,fuel, self.axsrc)
+		figsrc.canvas.mpl_connect('button_press_event', self.af)
+		
+	def reset_area(self,event):
+		self.axsrc.set_xlim(self.master_lx_lim, self.master_ux_lim)
+		self.axsrc.set_ylim(self.master_ly_lim, self.master_uy_lim)
+		draw()	
+		
+>>>>>>> d96194bbba83c89979ac4b15ea4dee8c70fa6d2d
 class AnnoteFinder:
 
 	def __init__(self, xdata, ydata, colordata, distdata, durdata, pacedata, caloriedata, fueldata,  axis=None):
@@ -263,7 +268,6 @@ master_ux_lim = None
 master_uy_lim = None
 n_clusters = 8
 	
-figsrc = figure()
 #left, bottom
 a = figtext(.20,.40, "POINT INFORMATION", fontsize = 20, bbox = dict(facecolor='white', alpha=.5)) 
 clust_title = figtext(.10, .35, "CLUSTER AVERAGE", fontsize = 16)
@@ -321,9 +325,6 @@ print "duration max: ", maxi
 #centers = utils.canopy_clustering(0.5, 0.65, X, utils.cosine_simularity)
 #print "Number of seeds: ", len(centers)
 
-
-
-figsrc.canvas.mpl_connect('button_press_event', cluster_man.af)
 #left, bottom, width, height
 
 
@@ -365,7 +366,7 @@ b_dist.on_clicked(to_dist)
 b_dur.on_clicked(to_dur)
 b_cal.on_clicked(to_cal)
 b_fuel.on_clicked(to_fuel)
-b_reset.on_clicked(reset_area)
+b_reset.on_clicked(cluster_man.reset_area)
 b_reclust.on_clicked(cluster_man.Cluster)
 check.on_clicked(cluster_man)
 
