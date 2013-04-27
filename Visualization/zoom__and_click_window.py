@@ -130,7 +130,6 @@ class Cluster_Manager:
 		print self.fuel
 		print self.cal
 		print ""
-		
 	
 class AnnoteFinder:
 
