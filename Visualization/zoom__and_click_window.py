@@ -13,7 +13,7 @@ from sklearn.cluster import MiniBatchKMeans
 from sklearn.cluster import KMeans
 from sklearn import decomposition
 import matplotlib.cm as cm
-import json, utils
+import json
 
 figsrc = figure()
 
@@ -139,6 +139,7 @@ class Cluster_Manager:
 		print self.fuel
 		print self.cal
 		print ""
+
 		self.bool_vec = [self.dist,self.dur,self.pace,self.fuel,self.cal, ]
 		
 	def Cluster(self, event=None):
@@ -176,6 +177,7 @@ class Cluster_Manager:
 			plot(cluster_center[0], cluster_center[1], 'o',
 				markerfacecolor=color, markeredgecolor='k', markersize=7)
 			title("Cluster View")
+
 		self.master_lx_lim = self.axsrc.get_xlim()[0]
 		self.master_ly_lim = self.axsrc.get_ylim()[0]
 		self.master_ux_lim = self.axsrc.get_xlim()[1]
@@ -188,6 +190,7 @@ class Cluster_Manager:
 		self.axsrc.set_ylim(self.master_ly_lim, self.master_uy_lim)
 		draw()	
 		
+>>>>>>> d96194bbba83c89979ac4b15ea4dee8c70fa6d2d
 class AnnoteFinder:
 
 	def __init__(self, xdata, ydata, colordata, distdata, durdata, pacedata, caloriedata, fueldata,  axis=None):
