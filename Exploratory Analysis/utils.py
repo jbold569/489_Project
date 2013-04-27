@@ -1,4 +1,5 @@
 import json
+import numpy as np
 
 def down_sample(data, size):
 	extra = len(data)%size
@@ -35,6 +36,49 @@ def temporal_similarity(Tp, Tq):
 		
 	return sum/len(Tp)
 	
+def cosine_simularity(V,U):
+	sum_V = 0.0
+	sum_U = 0.0
+	sum_product = 0.0
+	for v,u in zip(V,U):
+		sum_V += v**2
+		sum_U += u**2
+		sum_product += v*u
+	mag_V = sum_V/len(V)
+	mag_U = sum_U/len(U)
+	return 1 - sum_product/(mag_V*mag_U)
+	
+def euclidean_simularity(V,U):
+	sum = 0.0
+	for v,u in zip(V,U):
+		sum += (v-u)**2
+	return sum**0.5
+
+# Returns a list of centroids
+def canopy_clustering(t1, t2, data, sim_func = None):
+	# t1>t2
+	from random import shuffle
+	from collections import defaultdict
+	
+	dCanopies = defaultdict(list)
+	n = 0
+	original_list = data
+	shuffle(original_list)
+	print "What? ", original_list
+	while original_list:
+		vec = original_list[0]
+		canopy = [elem for elem in original_list if t1 > sim_func(vec,elem)]
+		original_list = [elem for elem in original_list if not t2 > sim_func(vec, elem)]
+		dCanopies[n] = canopy
+		n+=1
+	print dCanopies
+	centers = []
+	for points in dCanopies.values():
+		total = sum(np.array(points))
+		centers.append(total/float(len(points)))
+	
+	return np.array(centers)
+		
 def incStat(stat, data, key):
 	if sGet(data, key):
 		stat[sGet(data, key)] += 1
