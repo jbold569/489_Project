@@ -28,7 +28,7 @@ def get_dist(file):
 	return dist
 	
 def make_data(file):
-    return np.genfromtxt(file, delimiter = ',')
+	return np.genfromtxt(file, delimiter = ',')
 	
 def reset_area(event):
 	axsrc.set_xlim(master_lx_lim, master_ux_lim)
@@ -37,11 +37,11 @@ def reset_area(event):
 	
 	
 def find_center(points):
-    total_x = 0
-    total_y = 0
-    for X in points:
-        total_x += X[0]
-        total_y += X[1]
+	total_x = 0
+	total_y = 0
+	for X in points:
+		total_x += X[0]
+		total_y += X[1]
 	return [float(total_x)/len(points), float(total_y) / len(points)]
 	
 def to_pace(event):
@@ -129,7 +129,9 @@ class Cluster_Manager:
 		print self.fuel
 		print self.cal
 		print ""
-		
+	
+	def filterData(self):
+		pass
 	
 class AnnoteFinder:
 
@@ -277,25 +279,25 @@ print "duration max: ", maxi
 #centers = utils.canopy_clustering(0.5, 0.65, X, utils.cosine_simularity)
 #print "Number of seeds: ", len(centers)
 km = MiniBatchKMeans(k=n_clusters, init='random', n_init=10,
-                     random_state=random_state).fit(X)
+					 random_state=random_state).fit(X)
 pca = decomposition.PCA(n_components=2)
 pca.fit(X)
 X = pca.transform(X)
-        
+		
 for k in range(n_clusters):
-    my_members = km.labels_ == k
-    color = cm.spectral(float(k) / n_clusters, 1)
-    x.extend(X[my_members, 0])
-    y.extend(X[my_members, 1])
-    for i in range(0,len(X[my_members])):
+	my_members = km.labels_ == k
+	color = cm.spectral(float(k) / n_clusters, 1)
+	x.extend(X[my_members, 0])
+	y.extend(X[my_members, 1])
+	for i in range(0,len(X[my_members])):
 		c.append(k)
-    plot(X[my_members, 0], X[my_members, 1], 'o', marker='.', c=color)
-    #cluster_center = km.cluster_centers_[k]
-    cluster_center = find_center(X[my_members])
-    print "Center: "
+	plot(X[my_members, 0], X[my_members, 1], 'o', marker='.', c=color)
+	#cluster_center = km.cluster_centers_[k]
+	cluster_center = find_center(X[my_members])
+	print "Center: "
 	plot(cluster_center[0], cluster_center[1], 'o',
-            markerfacecolor=color, markeredgecolor='k', markersize=7)
-    title("Cluster View")
+		markerfacecolor=color, markeredgecolor='k', markersize=7)
+	title("Cluster View")
 master_lx_lim = axsrc.get_xlim()[0]
 master_ly_lim = axsrc.get_ylim()[0]
 master_ux_lim = axsrc.get_xlim()[1]
