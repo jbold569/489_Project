@@ -15,6 +15,15 @@ from sklearn import decomposition
 import matplotlib.cm as cm
 import json, utils
 
+x = []
+y = []
+c = []
+dist = []
+dur = []
+pace = []
+calories = []
+fuel = []
+
 def get_speed(file):
 	speed = []
 	for line in file:
@@ -112,12 +121,16 @@ def to_fuel(event):
 class Cluster_Manager:
 	def __init__(self, master_X):
 		self.master = master_X
+		self.axsrc = figsrc.add_subplot(211, autoscale_on=True)	
 		self.dist = True
 		self.dur = True
 		self.pace = True
 		self.fuel = True
 		self.cal = True
-	def __call__(self, event):
+		self.__call__()
+		self.Cluster()
+	
+	def __call__(self, event=None):
 		if event == 'dist' : self.dist = not(self.dist)
 		elif event == 'dur' : self.dur = not(self.dur)
 		elif event == 'pace' : self.pace = not(self.pace)
@@ -129,10 +142,47 @@ class Cluster_Manager:
 		print self.fuel
 		print self.cal
 		print ""
-	
-	def filterData(self):
-		pass
-	
+		self.bool_vec = [self.dist,self.dur,self.pace,self.fuel,self.cal, ]
+		
+	def Cluster(self, event=None):
+		global x,y,c,dist,dur,pace,calories,fuel
+		
+		print self.bool_vec
+		
+		delaxes(self.axsrc)
+		
+		self.axsrc = figsrc.add_subplot(211, autoscale_on=True)			
+		self.axsrc.set_title('Right Click to Zoom')
+		
+		def select(vec): return [elem for elem,b in zip(vec,self.bool_vec) if b]
+		X = [ select(elem) for elem in self.master]
+		print X[0]
+		km = MiniBatchKMeans(k=n_clusters, init='random', n_init=10,
+					 random_state=random_state).fit(X)
+		pca = decomposition.PCA(n_components=2)
+		pca.fit(X)
+		X = pca.transform(X)
+				
+		for k in range(n_clusters):
+			my_members = km.labels_ == k
+			color = cm.spectral(float(k) / n_clusters, 1)
+			x.extend(X[my_members, 0])
+			y.extend(X[my_members, 1])
+			for i in range(0,len(X[my_members])):
+				c.append(k)
+			plot(X[my_members, 0], X[my_members, 1], 'o', marker='.', c=color)
+			#cluster_center = km.cluster_centers_[k]
+			cluster_center = find_center(X[my_members])
+			print "Center: "
+			plot(cluster_center[0], cluster_center[1], 'o',
+				markerfacecolor=color, markeredgecolor='k', markersize=7)
+			title("Cluster View")
+		master_lx_lim = self.axsrc.get_xlim()[0]
+		master_ly_lim = self.axsrc.get_ylim()[0]
+		master_ux_lim = self.axsrc.get_xlim()[1]
+		master_uy_lim = self.axsrc.get_ylim()[1]
+		self.af = AnnoteFinder(x,y,c,dist,dur,pace,calories,fuel, None)
+		
 class AnnoteFinder:
 
 	def __init__(self, xdata, ydata, colordata, distdata, durdata, pacedata, caloriedata, fueldata,  axis=None):
@@ -229,21 +279,12 @@ fuel_text = figtext(.35,.10,"FUEL = n/a")
 clust_fuel_text = figtext(.10,.10,"FUEL = n/a")
 
 #figsrc.subplots_adjust(bottom = .5, left = .05, right = .95, top = .95)
-axsrc = figsrc.add_subplot(211, autoscale_on=True)	
 
-#axsrc.set_visible(False)							
-axsrc.set_title('Right Click to Zoom')
+#axsrc.set_visible(False)					
 in_file = open("..\Exploratory Analysis\clean_data.txt", 'r')
 
 X = []
-x = []
-y = []
-c = []
-dist = []
-dur = []
-pace = []
-calories = []
-fuel = []
+
 
 cluster_man = None
 
@@ -267,8 +308,8 @@ for line in in_file:
 		calories.append(vector[3])
 		fuel.append(vector[4])
 		X.append(vector)
-cluster_man = Cluster_Manager(X)
 X = np.array(X)
+cluster_man = Cluster_Manager(X)
 
 maxi = 0
 for item in dur:
@@ -278,35 +319,10 @@ print "duration max: ", maxi
 
 #centers = utils.canopy_clustering(0.5, 0.65, X, utils.cosine_simularity)
 #print "Number of seeds: ", len(centers)
-km = MiniBatchKMeans(k=n_clusters, init='random', n_init=10,
-					 random_state=random_state).fit(X)
-pca = decomposition.PCA(n_components=2)
-pca.fit(X)
-X = pca.transform(X)
-		
-for k in range(n_clusters):
-	my_members = km.labels_ == k
-	color = cm.spectral(float(k) / n_clusters, 1)
-	x.extend(X[my_members, 0])
-	y.extend(X[my_members, 1])
-	for i in range(0,len(X[my_members])):
-		c.append(k)
-	plot(X[my_members, 0], X[my_members, 1], 'o', marker='.', c=color)
-	#cluster_center = km.cluster_centers_[k]
-	cluster_center = find_center(X[my_members])
-	print "Center: "
-	plot(cluster_center[0], cluster_center[1], 'o',
-		markerfacecolor=color, markeredgecolor='k', markersize=7)
-	title("Cluster View")
-master_lx_lim = axsrc.get_xlim()[0]
-master_ly_lim = axsrc.get_ylim()[0]
-master_ux_lim = axsrc.get_xlim()[1]
-master_uy_lim = axsrc.get_ylim()[1]
 
 
-af = AnnoteFinder(x,y,c,dist,dur,pace,calories,fuel, None)
 
-figsrc.canvas.mpl_connect('button_press_event', af)
+figsrc.canvas.mpl_connect('button_press_event', cluster_man.af)
 #left, bottom, width, height
 
 
@@ -349,6 +365,7 @@ b_dur.on_clicked(to_dur)
 b_cal.on_clicked(to_cal)
 b_fuel.on_clicked(to_fuel)
 b_reset.on_clicked(reset_area)
+b_reclust.on_clicked(cluster_man.Cluster)
 check.on_clicked(cluster_man)
 
 show()
