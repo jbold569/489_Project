@@ -42,22 +42,7 @@ def find_center(points):
     for X in points:
         total_x += X[0]
         total_y += X[1]
-<<<<<<< HEAD
-	try:
-		return [float(total_x)/len(points), float(total_y) / len(points)]
-	except:
-		return [0,0]
-		
-def update_sliders(val):
-	slider_tracker.update_pace(s_speed.val)
-	slider_tracker.update_dist(s_distance.val)
-	slider_tracker.update_dur(s_dur.val)
-	slider_tracker.update_cal(s_cal.val)
-	slider_tracker.update_fuel(s_fuel.val)
-=======
-    return [float(total_x)/len(points), float(total_y) / len(points)]
-
->>>>>>> 27a70a1df00fea530954611516171565f615d6a9
+	return [float(total_x)/len(points), float(total_y) / len(points)]
 	
 def to_pace(event):
 	global aux_aux
@@ -258,7 +243,6 @@ for line in in_file:
 		X.append(vector)
 X = np.array(X)
 
-<<<<<<< HEAD
 maxi = 0
 for item in dur:
 	if item > maxi:
@@ -283,7 +267,8 @@ for k in range(n_clusters):
     plot(X[my_members, 0], X[my_members, 1], 'o', marker='.', c=color)
     #cluster_center = km.cluster_centers_[k]
     cluster_center = find_center(X[my_members])
-    plot(cluster_center[0], cluster_center[1], 'o',
+    print "Center: "
+	plot(cluster_center[0], cluster_center[1], 'o',
             markerfacecolor=color, markeredgecolor='k', markersize=7)
     title("Cluster View")
 master_lx_lim = axsrc.get_xlim()[0]
