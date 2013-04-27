@@ -203,18 +203,31 @@ class AnnoteFinder:
 		if event.inaxes:
 		  clickX = event.xdata
 		  clickY = event.ydata
+		  closest_i = 0
+		  closest_dist = 10000000
 		  if self.axis is None or self.axis==event.inaxes:
-			for x,y,c,di,du,pa,cal,fu in self.data:
-			  if  clickX-self.xtol < x < clickX+self.xtol and  clickY-self.ytol < y < clickY+self.ytol :
-				print "TRUE", x, y, c,di,du,pa,cal,fu
-				a.set_bbox(dict(facecolor=cm.spectral(float(c) / n_clusters, 1), alpha=.5))
-				dist_text.set_text ("DIST (km) = %.3f" % di)
-				dur_text.set_text("DUR (min) = %.3f" % du) 
-				pace_text.set_text ("PACE (min/mi) = %.3f" % pa)
-				cal_text.set_text ("CAL = %.3f" % cal)
-				fuel_text.set_text ("FUEL = %.3f" % fu)
-				figsrc.canvas.draw()
-
+			for i in range(0,len(self.data)):
+				potential = self.distance(clickX, self.data[i][0], clickY, self.data[i][1])
+				if potential < closest_dist:
+					closest_dist = potential
+					closest_i = i
+			x = self.data[closest_i][0]
+			y = self.data[closest_i][1]
+			c = self.data[closest_i][2]
+			di = self.data[closest_i][3]
+			du = self.data[closest_i][4]
+			pa = self.data[closest_i][5]
+			cal = self.data[closest_i][6]
+			fu = self.data[closest_i][7]
+			print "TRUE", x, y, c,di,du,pa,cal,fu
+			a.set_bbox(dict(facecolor=cm.spectral(float(c) / n_clusters, 1), alpha=.5))
+			dist_text.set_text ("DIST (km) = %.3f" % di)
+			dur_text.set_text("DUR (min) = %.3f" % du) 
+			pace_text.set_text ("PACE (min/mi) = %.3f" % pa)
+			cal_text.set_text ("CAL = %.3f" % cal)
+			fuel_text.set_text ("FUEL = %.3f" % fu)
+			figsrc.canvas.draw()
+		
 random_state = np.random.RandomState(0)
 
 master_lx_lim = None
