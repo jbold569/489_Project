@@ -143,7 +143,9 @@ class Cluster_Manager:
 		
 	def Cluster(self, event=None):
 		global x,y,c,dist,dur,pace,calories,fuel,figsrc
-		
+		x=[]
+		y=[]
+		c=[]
 		print self.bool_vec
 		
 		delaxes(self.axsrc)
