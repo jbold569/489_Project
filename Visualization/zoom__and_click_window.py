@@ -144,7 +144,6 @@ class AnnoteFinder:
 			pa = self.data[closest_i][5]
 			cal = self.data[closest_i][6]
 			fu = self.data[closest_i][7]
-			print "TRUE", x, y, c,di,du,pa,cal,fu
 			a.set_bbox(dict(facecolor=cm.spectral(float(c) / n_clusters, 1), alpha=.5))
 			dist_text.set_text ("DIST (km) = %.3f" % di)
 			dur_text.set_text("DUR (min) = %.3f" % du) 
@@ -188,13 +187,13 @@ master_ly_lim = None
 
 master_ux_lim = None
 master_uy_lim = None
-n_clusters = 6				
+n_clusters = 8
 	
 figsrc = figure()
 #left, bottom
-a = figtext(.25,.40, "CLUSTER", bbox = dict(facecolor='white', alpha=.5)) 
-clust_title = figtext(.10, .35, "CLUSTER AVERAGE")
-ind_title = figtext(.35, .35, "INDIVIDUAL POINT")
+a = figtext(.20,.40, "POINT INFORMATION", fontsize = 20, bbox = dict(facecolor='white', alpha=.5)) 
+clust_title = figtext(.10, .35, "CLUSTER AVERAGE", fontsize = 16)
+ind_title = figtext(.35, .35, "INDIVIDUAL POINT", fontsize = 16)
 dist_text = figtext(.35,.30,"DIST (km) = n/a")
 clust_dist_text = figtext(.10,.30,"DIST (km) = n/a")
 dur_text = figtext(.35,.25,"DUR (min) = n/a") 
@@ -244,12 +243,6 @@ for line in in_file:
 		fuel.append(vector[4])
 		X.append(vector)
 X = np.array(X)
-
-maxi = 0
-for item in dur:
-	if item > maxi:
-		maxi = item
-print "duration max: ", maxi
 
 km = MiniBatchKMeans(k=n_clusters, init='random', n_init=10,
                      random_state=random_state).fit(X)

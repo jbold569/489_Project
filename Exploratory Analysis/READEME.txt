@@ -1,0 +1,5 @@
+find_individuals.py: use to get links from raw twitter data
+
+grab_html.py: uses results from find_individuals to get html data and dump it
+
+vectorizer.py: user results from grab_html.py to make clean data
